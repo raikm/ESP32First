@@ -6,3 +6,4 @@
 * research how to connect through wifi
 * wifi connection available with the help of WiFiManager
   * https://www.youtube.com/watch?v=Errh7LEEug0 
+* setup wifi server on esp32
