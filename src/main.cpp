@@ -1,15 +1,39 @@
 #include <Arduino.h>
+#include <WiFiManager.h>
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
+  
   Serial.begin(921600);
-  Serial.println("hello from setup");
+  Serial.println("Starting setup");
+  delay(10);
+
+  WiFiManager wifiManager;
+
+
+  // If you've previously connected to your WiFi with this ESP32,
+  // WiFi manager will more than likely not do anything.
+  // Uncomment this if you want to force it to delete your old WiFi details.
+  //wifiManager.resetSettings();
+
+  //Tries to connect to last known WiFi details
+  //if it does not connect it starts an access point with the specified name
+  //here  "AutoConnectAP"
+  //and goes into a blocking loop awaiting configuration
+  if (!wifiManager.autoConnect("WiFiManagerAP", "password")) {
+    Serial.println("failed to connect and hit timeout");
+    //reset and try again, or maybe put it to deep sleep
+    ESP.restart();
+    delay(1000);
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+
 }
 
 void loop() {
-  delay(1000);
-  digitalWrite(LED_BUILTIN, HIGH);
-  Serial.println("hello from loop");
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);
+  
 }
