@@ -5,3 +5,7 @@
 * hello world send from microcontroller to computer
 * research how to connect through wifi
 * wifi connection available with the help of WiFiManager
+  * https://www.youtube.com/watch?v=Errh7LEEug0 
+* setup wifi server on esp32
+  * https://lastminuteengineers.com/creating-esp32-web-server-arduino-ide/
+* request data from server 
