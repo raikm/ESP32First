@@ -10,4 +10,5 @@
   * https://lastminuteengineers.com/creating-esp32-web-server-arduino-ide/
 * request data from server 
 * research moisture sensors -> capacitor soil moisture sonsor: https://youtu.be/IGP38bz-K48?t=616
+* next: install moisture sensor: https://github.com/vniclos/esp32-capacitative-soil-sensor
 
