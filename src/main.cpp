@@ -5,6 +5,13 @@
 
 WebServer server(80);
 
+const int SensorPin = A0;
+int soilMoistureRawValue = 0;
+int soilMoisture = 0;
+const int dry = 2691;
+const int wet = 967;
+
+
 void handle_Get();
 void handle_NotFound();
 
@@ -51,17 +58,18 @@ void loop() {
   server.handleClient();
 }
 
+int getMoistureValue() {
+  soilMoistureRawValue = analogRead(SensorPin);
+  int percentageValue = map(soilMoistureRawValue, wet, dry, 100, 0);
+  return percentageValue;
+}
+
 // return fake data
 void handle_Get() {
+  soilMoisture = getMoistureValue();
   String stranka = "{\n";
-  stranka += F("\"Hysteresis\":");
-  stranka += "100";
-  stranka += F(",\n");
-  stranka += F("\"Target_Temperature\":");
-  stranka += "100";
-  stranka += F(",\n");
-  stranka += F("\"Actual_Temperature\":");
-  stranka += "100";
+  stranka += F("\"Moisture\":");
+  stranka += soilMoisture;
   stranka += F("}\n");
   server.send(200, "application/json", stranka);
 }
@@ -69,3 +77,5 @@ void handle_Get() {
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
+
+
