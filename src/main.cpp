@@ -1,81 +1,53 @@
-#include <Arduino.h>
-#include <WiFiManager.h>
-#include <WebServer.h>
+/*********************************************************************************
+ *  MIT License
+ *  
+ *  Copyright (c) 2020 Gregg E. Berman
+ *  
+ *  https://github.com/HomeSpan/HomeSpan
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ *  
+ ********************************************************************************/
+ 
+#include "HomeSpan.h" 
+#include "DEV_LED.h"     
+#include "DEV_Identify.h"       
 
-
-WebServer server(80);
-
-const int SensorPin = A0;
-int soilMoistureRawValue = 0;
-int soilMoisture = 0;
-const int dry = 2691;
-const int wet = 967;
-
-
-void handle_Get();
-void handle_NotFound();
-
-
-
-void setup()
-{
-
-  Serial.begin(921600);
-  Serial.println("Starting setup");
-  delay(10);
-
-  WiFiManager wifiManager;
-
-
-  // Tries to connect to last known WiFi details
-  // if it does not connect it starts an access point with the specified name
-  // here  "AutoConnectAP"
-  // and goes into a blocking loop awaiting configuration
-  if (!wifiManager.autoConnect("WiFiManagerAP", "password")) {
-    Serial.println("failed to connect and hit timeout");
+void setup() {
   
-    // TODO reset and try again, or maybe put it to deep sleep
+  Serial.begin(115200);
 
-    ESP.restart();
+  homeSpan.begin(Category::Lighting,"HomeSpan LED");  
+                                                        
+  // Create an Dimmable LED attached to pin 16
+  new SpanAccessory();                                                          
+    new DEV_Identify("Dimmable LED","AZ-Delivery","123-ABC","LED","0.9",0);
+    new Service::HAPProtocolInformation();
+      new Characteristic::Version("1.1.0");
+    new DEV_DimmableLED(16);                                                       
+     
+} // end of setup()
 
-    delay(1000);
-  }
+//////////////////////////////////////
 
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // defined paths
-  server.on("/get_data", handle_Get);
-  server.onNotFound(handle_NotFound);
-
-  server.begin();
-  Serial.println("HTTP server started");
-}
-
-void loop() {
-  server.handleClient();
-}
-
-int getMoistureValue() {
-  soilMoistureRawValue = analogRead(SensorPin);
-  int percentageValue = map(soilMoistureRawValue, wet, dry, 100, 0);
-  return percentageValue;
-}
-
-// return fake data
-void handle_Get() {
-  soilMoisture = getMoistureValue();
-  String stranka = "{\n";
-  stranka += F("\"Moisture\":");
-  stranka += soilMoisture;
-  stranka += F("}\n");
-  server.send(200, "application/json", stranka);
-}
-
-void handle_NotFound(){
-  server.send(404, "text/plain", "Not found");
-}
-
-
+void loop(){
+  
+  homeSpan.poll();
+  
+} // end of loop()
