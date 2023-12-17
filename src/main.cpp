@@ -26,23 +26,23 @@
  ********************************************************************************/
  
 #include "HomeSpan.h" 
-#include "DEV_LED.h"     
+#include "DEV_MOISTURESENSOR.h"     
 #include "DEV_Identify.h"       
 
 void setup() {
   
   Serial.begin(115200);
 
-  homeSpan.begin(Category::Lighting,"HomeSpan LED");  
+  homeSpan.begin(Category::Sensors,"Moisture Sensor");  
                                                         
-  // Create an Dimmable LED attached to pin 16
+  // Create an Sensor attached to pin 16
   new SpanAccessory();                                                          
-    new DEV_Identify("Dimmable LED","AZ-Delivery","123-ABC","LED","0.9",0);
+    new DEV_Identify("Moisture Sensor","T&R Production","Proto-1","SEN","0.9",0);
     new Service::HAPProtocolInformation();
       new Characteristic::Version("1.1.0");
-    new DEV_DimmableLED(16);                                                       
+    new DEV_HumSensor();                                                       
      
-} // end of setup()
+}
 
 //////////////////////////////////////
 
