@@ -16,7 +16,7 @@ struct DEV_HumSensor : Service::HumiditySensor {
     // instantiate the Current Temperature Characteristic
     hum = new Characteristic::CurrentRelativeHumidity(50);
     // expand the range to 30%-100% 
-    hum->setRange(30, 100);                                
+    hum->setRange(0, 100);                                
 
     // initialization message
     Serial.print("Configuring Humidity Sensor");           
@@ -26,10 +26,23 @@ struct DEV_HumSensor : Service::HumiditySensor {
 
   void loop() {
 
+    const int SensorPin = 34;
+    int soilMoistureRawValue = 0;
+    int soilMoisture = 0;
+    const int dry = 2710;
+    const int wet = 1200;
+    soilMoistureRawValue = analogRead(SensorPin);
+    int percentageValue = map(soilMoistureRawValue, wet, dry, 100, 0);
+    // Serial.print(percentageValue);           
+
     // the humidity refreshes every 10 seconds by the elapsed time
     if (hum->timeVal() > 10000) {
-      // read humidity from sensor dht22
-      float humidity = 30;  
+      Serial.print("RAW=");
+      Serial.print(soilMoistureRawValue);
+      Serial.print("PERCENTAGE=");
+      Serial.print(percentageValue);           
+      Serial.print("|");
+      float humidity = percentageValue;  
       // set the new humidity; this generates an Event Notification and also resets the elapsed time        
       hum->setVal(humidity);                            
 
